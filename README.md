@@ -17,13 +17,13 @@ Taller integrador ET0126 · Programación de Dispositivos Móviles · I.U. Pascu
 6. **Recorrido principal:**
    1. Abro la app y veo mis trabajos y un resumen por estado.
    2. Toco **Publicar trabajo**, lleno el formulario y dibujo el boceto.
-   3. Publico; el trabajo aparece en la lista como *Publicado*.
+   3. Publico; el trabajo aparece en la lista como _Publicado_.
    4. Abro el trabajo; en **Modo obrero** se simula la contraoferta con los botones + y −.
    5. Acepto o rechazo la contraoferta.
 7. **Datos:** título, categoría, detalles (opcional), precio ofrecido, contraoferta, estado y los puntos del boceto.
 8. **Canvas:** en lugar de una foto, el usuario dibuja con el dedo un boceto de dónde va el trabajo (por ejemplo, la pared y el lugar del TV). El boceto se ve en el detalle para que el obrero entienda qué hay que hacer.
 
-> **Nota:** en esta versión la contraoferta del obrero se simula en el mismo celular. Todavía no hay usuarios ni servidor; eso llega con Firebase en la Unidad 3.
+> **Nota:** en esta versión la contraoferta del obrero se simula en el mismo celular. Todavía no hay usuarios ni servidor.
 
 ## Estructura
 
@@ -43,20 +43,20 @@ assets/images/logo_obam.png
 
 ## Almacenamiento: ¿por qué SharedPreferences?
 
-Uso **SharedPreferences** porque la app guarda pocos trabajos y con pocos campos. Convierto la lista a texto JSON (`jsonEncode`) y la guardo con una sola llave. Al abrir la app, la leo y la convierto otra vez en objetos (`jsonDecode` + `requerimientoDesdeMap`). Si más adelante hay muchos registros o búsquedas, lo cambiaría por SQLite o Firebase.
+Uso **SharedPreferences** porque la app guarda pocos trabajos y con pocos campos. Convierto la lista a texto JSON (`jsonEncode`) y la guardo con una sola llave. Al abrir la app, la leo y la convierto otra vez en objetos (`jsonDecode` + `requerimientoDesdeMap`). .
 
 ## Conceptos de Dart en mi app
 
-| Concepto | Dónde |
-|---|---|
-| Tipos, `final`/`const` y null safety | `models/requerimiento.dart`: `descripcion` y `contraoferta` son nullable porque pueden faltar; el resto no. |
-| Clases y objetos | Clase `Requerimiento` con constructor y métodos `contraofertar()`, `aceptar()`, `rechazar()` y `precioFinal()`. Se crean objetos en `crear_screen.dart` y al cargar con `requerimientoDesdeMap()`. |
-| Funciones | `validarPrecio()` en `crear_screen.dart`, `formatearPrecio()` y `requerimientoDesdeMap()` en el modelo. |
-| `List` | `List<Requerimiento>` en `home_screen.dart` y los puntos del boceto `List<Offset?>`. |
-| `Set` | `categorias` en el modelo: una categoría no se puede repetir. |
-| `Map` | `contarPorEstado()` en el servicio devuelve cuántos trabajos hay por estado. También `toMap()` para guardar. |
-| `if` y `for` | `if` en las validaciones y en el color del estado de la tarjeta; `for` para recorrer la lista, contar estados y dibujar las líneas del boceto. |
-| `while` | `formatearPrecio()`: recorre las cifras del precio de derecha a izquierda y pone un punto cada tres cifras (`120000` → `$ 120.000`). Es finito porque termina al llegar a la primera cifra. |
+| Concepto                             | Dónde                                                                                                                                                                                              |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tipos, `final`/`const` y null safety | `models/requerimiento.dart`: `descripcion` y `contraoferta` son nullable porque pueden faltar; el resto no.                                                                                        |
+| Clases y objetos                     | Clase `Requerimiento` con constructor y métodos `contraofertar()`, `aceptar()`, `rechazar()` y `precioFinal()`. Se crean objetos en `crear_screen.dart` y al cargar con `requerimientoDesdeMap()`. |
+| Funciones                            | `validarPrecio()` en `crear_screen.dart`, `formatearPrecio()` y `requerimientoDesdeMap()` en el modelo.                                                                                            |
+| `List`                               | `List<Requerimiento>` en `home_screen.dart` y los puntos del boceto `List<Offset?>`.                                                                                                               |
+| `Set`                                | `categorias` en el modelo: una categoría no se puede repetir.                                                                                                                                      |
+| `Map`                                | `contarPorEstado()` en el servicio devuelve cuántos trabajos hay por estado. También `toMap()` para guardar.                                                                                       |
+| `if` y `for`                         | `if` en las validaciones y en el color del estado de la tarjeta; `for` para recorrer la lista, contar estados y dibujar las líneas del boceto.                                                     |
+| `while`                              | `formatearPrecio()`: recorre las cifras del precio de derecha a izquierda y pone un punto cada tres cifras (`120000` → `$ 120.000`). Es finito porque termina al llegar a la primera cifra.        |
 
 ## Stateless y Stateful
 
@@ -85,10 +85,10 @@ Probé la app en el emulador Android de Android Studio, pero el emulador mostrab
 
 ## Capturas
 
-| Inicio | Validación | Contraoferta |
-|---|---|---|
+| Inicio                         | Validación                             | Contraoferta                     |
+| ------------------------------ | -------------------------------------- | -------------------------------- |
 | ![Inicio](capturas/inicio.png) | ![Formulario](capturas/formulario.png) | ![Detalle](capturas/detalle.png) |
 
 ## Uso de IA
 
-Usé Claude (IA) como apoyo para estructurar el proyecto, generar una primera versión del código, simplificarlo a lo visto en clase y resolver errores de configuración del entorno. Revisé y probé cada parte, y puedo explicar y modificar cualquier archivo.
+Profe usé Claude como apoyo para estructurar el proyecto, generar una base primera versión del código, simplificarlo a lo visto en clase y resolver errores de configuración del entorno. Revisé y probé cada parte, y puedo explicar y modificar cualquier archivo.
