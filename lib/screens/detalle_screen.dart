@@ -21,12 +21,37 @@ class _DetalleScreenState extends State<DetalleScreen> {
     _propuesta = widget.requerimiento.precioFinal();
   }
 
-  void _subir() => setState(() => _propuesta += 5000);
+  void _subir() {
+    setState(() {
+      _propuesta = _propuesta + 5000;
+    });
+  }
 
   void _bajar() {
+    // No deja bajar de 5.000
     if (_propuesta > 5000) {
-      setState(() => _propuesta -= 5000);
+      setState(() {
+        _propuesta = _propuesta - 5000;
+      });
     }
+  }
+
+  void _enviarContraoferta() {
+    setState(() {
+      widget.requerimiento.contraofertar(_propuesta);
+    });
+  }
+
+  void _aceptar() {
+    setState(() {
+      widget.requerimiento.aceptar();
+    });
+  }
+
+  void _rechazar() {
+    setState(() {
+      widget.requerimiento.rechazar();
+    });
   }
 
   @override
@@ -79,7 +104,7 @@ class _DetalleScreenState extends State<DetalleScreen> {
               ],
             ),
             OutlinedButton(
-              onPressed: () => setState(() => r.contraofertar(_propuesta)),
+              onPressed: _enviarContraoferta,
               child: const Text('Enviar contraoferta'),
             ),
           ],
@@ -91,11 +116,11 @@ class _DetalleScreenState extends State<DetalleScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
-                  onPressed: () => setState(() => r.aceptar()),
+                  onPressed: _aceptar,
                   child: const Text('Aceptar'),
                 ),
                 OutlinedButton(
-                  onPressed: () => setState(() => r.rechazar()),
+                  onPressed: _rechazar,
                   child: const Text('Rechazar'),
                 ),
               ],
