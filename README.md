@@ -43,15 +43,15 @@ assets/images/logo_obam.png
 
 ## Almacenamiento: ¿por qué SharedPreferences?
 
-Uso **SharedPreferences** porque la app guarda pocos trabajos y con pocos campos. Convierto la lista a texto JSON (`jsonEncode`) y la guardo con una sola llave. Al abrir la app, la leo y la convierto otra vez en objetos (`jsonDecode` + `Requerimiento.fromMap`). Si más adelante hay muchos registros o búsquedas, lo cambiaría por SQLite o Firebase.
+Uso **SharedPreferences** porque la app guarda pocos trabajos y con pocos campos. Convierto la lista a texto JSON (`jsonEncode`) y la guardo con una sola llave. Al abrir la app, la leo y la convierto otra vez en objetos (`jsonDecode` + `requerimientoDesdeMap`). Si más adelante hay muchos registros o búsquedas, lo cambiaría por SQLite o Firebase.
 
 ## Conceptos de Dart en mi app
 
 | Concepto | Dónde |
 |---|---|
 | Tipos, `final`/`const` y null safety | `models/requerimiento.dart`: `descripcion` y `contraoferta` son nullable porque pueden faltar; el resto no. |
-| Clases y objetos | Clase `Requerimiento` con constructor y métodos `contraofertar()`, `aceptar()`, `rechazar()` y `precioFinal()`. Se crean objetos en `crear_screen.dart`. |
-| Funciones | `validarPrecio()` en `crear_screen.dart` y `formatearPrecio()` en el modelo. |
+| Clases y objetos | Clase `Requerimiento` con constructor y métodos `contraofertar()`, `aceptar()`, `rechazar()` y `precioFinal()`. Se crean objetos en `crear_screen.dart` y al cargar con `requerimientoDesdeMap()`. |
+| Funciones | `validarPrecio()` en `crear_screen.dart`, `formatearPrecio()` y `requerimientoDesdeMap()` en el modelo. |
 | `List` | `List<Requerimiento>` en `home_screen.dart` y los puntos del boceto `List<Offset?>`. |
 | `Set` | `categorias` en el modelo: una categoría no se puede repetir. |
 | `Map` | `contarPorEstado()` en el servicio devuelve cuántos trabajos hay por estado. También `toMap()` para guardar. |
@@ -65,20 +65,30 @@ Uso **SharedPreferences** porque la app guarda pocos trabajos y con pocos campos
 
 ## Cómo ejecutar
 
+En el repositorio solo están los archivos de clase (`lib`, `assets`, `pubspec.yaml`). Las carpetas de Android y las demás plataformas se generan con `flutter create`:
+
 ```bash
-flutter create obam
-# copiar lib/, assets/ y pubspec.yaml de este repositorio dentro del proyecto
-cd obam
+git clone https://github.com/Camilo-fonseca237/et0126-obam.git
+cd et0126-obam
+flutter create . --project-name obam
 flutter pub get
 flutter run
 ```
 
-Para probar la persistencia: publica un trabajo, cierra la app por completo y ábrela otra vez. El trabajo y su estado siguen en la lista.
+También se puede ejecutar en FlutLab (flutlab.io) subiendo el proyecto.
 
-## Captura
+**Prueba de persistencia:** publica un trabajo, cierra la app por completo y ábrela otra vez. El trabajo y su estado siguen en la lista.
 
-![Pantalla de inicio](capturas/inicio.png)
+## Ejecución
+
+Probé la app en el emulador Android de Android Studio, pero el emulador mostraba la pantalla deformada, así que terminé de probarla en FlutLab. El código es el mismo para Android.
+
+## Capturas
+
+| Inicio | Validación | Contraoferta |
+|---|---|---|
+| ![Inicio](capturas/inicio.png) | ![Formulario](capturas/formulario.png) | ![Detalle](capturas/detalle.png) |
 
 ## Uso de IA
 
-Usé Claude (IA) como apoyo para estructurar el proyecto y generar una primera versión del código, que luego revisé y probé en el emulador. Puedo explicar y modificar cada parte del código.
+Usé Claude (IA) como apoyo para estructurar el proyecto, generar una primera versión del código, simplificarlo a lo visto en clase y resolver errores de configuración del entorno. Revisé y probé cada parte, y puedo explicar y modificar cualquier archivo.
