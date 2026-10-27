@@ -11,7 +11,8 @@ class BocetoPainter extends CustomPainter {
     // Fondo tipo pared
     final fondo = Paint();
     fondo.color = const Color(0xFFF5F0E6);
-    canvas.drawRect(Offset.zero & size, fondo);
+    // Rectángulo del tamaño de todo el lienzo
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), fondo);
 
     // Lápiz con el que se dibujan las líneas
     final lapiz = Paint();
