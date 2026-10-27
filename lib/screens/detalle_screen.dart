@@ -13,7 +13,7 @@ class DetalleScreen extends StatefulWidget {
 }
 
 class _DetalleScreenState extends State<DetalleScreen> {
-  late int _propuesta; // precio que el obrero va a contraofertar
+  int _propuesta = 0; // precio que el obrero va a contraofertar
 
   @override
   void initState() {

@@ -13,12 +13,13 @@ class BocetoScreen extends StatefulWidget {
 }
 
 class _BocetoScreenState extends State<BocetoScreen> {
-  late List<Offset?> _puntos;
+  final List<Offset?> _puntos = [];
 
   @override
   void initState() {
     super.initState();
-    _puntos = List.of(widget.inicial); // copia para no dañar el original
+    // Copio los puntos que ya había para no dañar el boceto original
+    _puntos.addAll(widget.inicial);
   }
 
   // Solo agrega el punto si está dentro del lienzo de 300 x 300.
