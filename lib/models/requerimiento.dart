@@ -58,6 +58,16 @@ class Requerimiento {
 
   // Convierte el objeto a Map para guardarlo.
   Map<String, dynamic> toMap() {
+    // Cada punto se guarda como [x, y]; los null se quedan como null.
+    final List puntos = [];
+    for (final p in boceto) {
+      if (p == null) {
+        puntos.add(null);
+      } else {
+        puntos.add([p.dx, p.dy]);
+      }
+    }
+
     return {
       'titulo': titulo,
       'categoria': categoria,
@@ -65,14 +75,24 @@ class Requerimiento {
       'precioOfrecido': precioOfrecido,
       'contraoferta': contraoferta,
       'estado': estado,
-      'boceto': boceto.map((p) => p == null ? null : [p.dx, p.dy]).toList(),
+      'boceto': puntos,
     };
   }
 }
 
 // Crea un Requerimiento a partir del Map guardado.
 Requerimiento requerimientoDesdeMap(Map<String, dynamic> map) {
+  // Convierte cada [x, y] otra vez en un Offset.
   final List puntos = map['boceto'];
+  final List<Offset?> boceto = [];
+  for (final p in puntos) {
+    if (p == null) {
+      boceto.add(null);
+    } else {
+      boceto.add(Offset(p[0], p[1]));
+    }
+  }
+
   return Requerimiento(
     titulo: map['titulo'],
     categoria: map['categoria'],
@@ -80,9 +100,7 @@ Requerimiento requerimientoDesdeMap(Map<String, dynamic> map) {
     precioOfrecido: map['precioOfrecido'],
     contraoferta: map['contraoferta'],
     estado: map['estado'],
-    boceto: puntos
-        .map((p) => p == null ? null : Offset(p[0], p[1]))
-        .toList(),
+    boceto: boceto,
   );
 }
 

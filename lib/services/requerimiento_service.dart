@@ -24,7 +24,10 @@ class RequerimientoService {
   // Guarda toda la lista como texto JSON.
   Future<void> guardar(List<Requerimiento> lista) async {
     final prefs = await SharedPreferences.getInstance();
-    final datos = lista.map((r) => r.toMap()).toList();
+    final List datos = [];
+    for (final r in lista) {
+      datos.add(r.toMap());
+    }
     await prefs.setString(_llave, jsonEncode(datos));
   }
 
