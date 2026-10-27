@@ -53,7 +53,10 @@ class Requerimiento {
 
   // Precio con el que se cerraría el trabajo.
   int precioFinal() {
-    return contraoferta ?? precioOfrecido;
+    if (contraoferta != null) {
+      return contraoferta!;
+    }
+    return precioOfrecido;
   }
 
   // Convierte el objeto a Map para guardarlo.
