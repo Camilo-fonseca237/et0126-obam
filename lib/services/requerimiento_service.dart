@@ -16,7 +16,7 @@ class RequerimientoService {
     final List datos = jsonDecode(texto);
     final List<Requerimiento> lista = [];
     for (final item in datos) {
-      lista.add(Requerimiento.fromMap(item));
+      lista.add(requerimientoDesdeMap(item));
     }
     return lista;
   }

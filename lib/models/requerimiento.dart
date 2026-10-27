@@ -68,22 +68,22 @@ class Requerimiento {
       'boceto': boceto.map((p) => p == null ? null : [p.dx, p.dy]).toList(),
     };
   }
+}
 
-  // Crea el objeto a partir del Map guardado.
-  factory Requerimiento.fromMap(Map<String, dynamic> map) {
-    final List puntos = map['boceto'];
-    return Requerimiento(
-      titulo: map['titulo'],
-      categoria: map['categoria'],
-      descripcion: map['descripcion'],
-      precioOfrecido: map['precioOfrecido'],
-      contraoferta: map['contraoferta'],
-      estado: map['estado'],
-      boceto: puntos
-          .map((p) => p == null ? null : Offset(p[0], p[1]))
-          .toList(),
-    );
-  }
+// Crea un Requerimiento a partir del Map guardado.
+Requerimiento requerimientoDesdeMap(Map<String, dynamic> map) {
+  final List puntos = map['boceto'];
+  return Requerimiento(
+    titulo: map['titulo'],
+    categoria: map['categoria'],
+    descripcion: map['descripcion'],
+    precioOfrecido: map['precioOfrecido'],
+    contraoferta: map['contraoferta'],
+    estado: map['estado'],
+    boceto: puntos
+        .map((p) => p == null ? null : Offset(p[0], p[1]))
+        .toList(),
+  );
 }
 
 // while: pone un punto cada tres cifras. 120000 -> $ 120.000
