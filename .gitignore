@@ -1,0 +1,11 @@
+# Guarda el proyecto completo en el PC, pero en Git solo sube lo de clase.
+/*
+!/.gitignore
+!/lib/
+!/lib/**
+!/assets/
+!/assets/**
+!/capturas/
+!/capturas/**
+!/pubspec.yaml
+!/README.md
