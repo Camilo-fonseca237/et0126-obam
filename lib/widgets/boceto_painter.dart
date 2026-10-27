@@ -9,13 +9,15 @@ class BocetoPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // Fondo tipo pared
-    final fondo = Paint()..color = const Color(0xFFF5F0E6);
+    final fondo = Paint();
+    fondo.color = const Color(0xFFF5F0E6);
     canvas.drawRect(Offset.zero & size, fondo);
 
-    final lapiz = Paint()
-      ..color = Colors.brown
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.round;
+    // Lápiz con el que se dibujan las líneas
+    final lapiz = Paint();
+    lapiz.color = Colors.brown;
+    lapiz.strokeWidth = 4;
+    lapiz.strokeCap = StrokeCap.round;
 
     // Une cada punto con el siguiente, salvo cuando hay un null (corte).
     for (int i = 0; i < puntos.length - 1; i++) {
