@@ -5,6 +5,7 @@ import '../services/requerimiento_service.dart';
 import '../widgets/requerimiento_card.dart';
 import 'crear_screen.dart';
 import 'detalle_screen.dart';
+import 'obreros_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -99,6 +100,18 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: _abrirCrear,
               icon: const Icon(Icons.add),
               label: const Text('Publicar trabajo'),
+            ),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ObrerosScreen()),
+              ),
+              icon: const Icon(Icons.people),
+              label: const Text('Mis obreros de confianza'),
             ),
           ),
           const SizedBox(height: 16),
