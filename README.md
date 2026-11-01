@@ -170,4 +170,4 @@ Los obreros se guardan solo en la memoria de la app. **Al cerrar la app se borra
 
 ## Uso de IA (taller 2)
 
-Usé Claude para generar la pantalla de obreros, el modelo y el servicio en memoria con el código más simple posible. Revisé y probé el flujo, y puedo explicar cada archivo.
+Usé Claude para generar  el base. Revisé y probé el flujo, y puedo explicar cada archivo.
