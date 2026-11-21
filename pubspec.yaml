@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   shared_preferences: ^2.3.0
   form_field_validator: ^1.1.0
+  firebase_core: any
+  firebase_auth: any
 
 dev_dependencies:
   flutter_test:
