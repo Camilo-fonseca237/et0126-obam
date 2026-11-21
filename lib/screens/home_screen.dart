@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../models/requerimiento.dart';
@@ -56,19 +57,42 @@ class _HomeScreenState extends State<HomeScreen> {
       context,
       MaterialPageRoute(builder: (_) => DetalleScreen(requerimiento: r)),
     );
+    if (!mounted) return;
     setState(() {});
     await _servicio.guardar(_requerimientos);
+  }
+
+  Future<void> _cerrarSesion() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo cerrar sesión')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final resumen = _servicio.contarPorEstado(_requerimientos);
+    final usuario = FirebaseAuth.instance.currentUser;
+    final nombreUsuario = (usuario?.displayName?.isNotEmpty ?? false)
+        ? usuario!.displayName!
+        : (usuario?.email ?? '');
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('OBAM'),
         backgroundColor: Colors.orange,
         foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            tooltip: 'Cerrar sesión',
+            icon: const Icon(Icons.logout),
+            onPressed: _cerrarSesion,
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -93,6 +117,13 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ],
           ),
+          if (nombreUsuario.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Sesión: $nombreUsuario',
+              style: const TextStyle(color: Colors.black54),
+            ),
+          ],
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
