@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../models/requerimiento.dart';
 import '../services/requerimiento_service.dart';
@@ -64,6 +66,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _cerrarSesion() async {
     try {
+      if (!kIsWeb) {
+        await GoogleSignIn.instance.signOut();
+      }
       await FirebaseAuth.instance.signOut();
     } catch (_) {
       if (!mounted) return;
