@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -49,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  // Inicia sesión o registra automáticamente al usuario con su cuenta de Google (Web).
+  // Inicia sesión o registra automáticamente al usuario con su cuenta de Google.
   Future<void> _ingresarConGoogle() async {
     if (_cargando) return;
     FocusScope.of(context).unfocus();
@@ -58,9 +60,26 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      final proveedor = GoogleAuthProvider();
-      proveedor.setCustomParameters({'prompt': 'select_account'});
-      await FirebaseAuth.instance.signInWithPopup(proveedor);
+      if (kIsWeb) {
+        final proveedor = GoogleAuthProvider();
+        proveedor.setCustomParameters({'prompt': 'select_account'});
+        await FirebaseAuth.instance.signInWithPopup(proveedor);
+      } else {
+        final cuenta = await GoogleSignIn.instance.authenticate();
+        final auth = cuenta.authentication;
+        final credencial = GoogleAuthProvider.credential(
+          idToken: auth.idToken,
+        );
+        await FirebaseAuth.instance.signInWithCredential(credencial);
+      }
+    } on GoogleSignInException catch (e) {
+      if (mounted) {
+        setState(
+          () => _error = e.code == GoogleSignInExceptionCode.canceled
+              ? 'Se canceló el acceso con Google.'
+              : 'No se pudo iniciar sesión con Google (${e.code.name}).',
+        );
+      }
     } on FirebaseAuthException catch (e) {
       if (mounted) {
         setState(() => _error = _mensajeErrorGoogle(e.code));
