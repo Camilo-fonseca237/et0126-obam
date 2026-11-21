@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'firebase_options.dart';
 import 'screens/home_screen.dart';
@@ -11,6 +13,11 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  if (!kIsWeb) {
+    await GoogleSignIn.instance.initialize(
+      serverClientId: DefaultFirebaseOptions.googleWebClientId,
+    );
+  }
   runApp(const ObamApp());
 }
 
