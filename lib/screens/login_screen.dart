@@ -12,19 +12,34 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nombre = TextEditingController();
   final _correo = TextEditingController();
   final _clave = TextEditingController();
+  final _confirmarClave = TextEditingController();
+  bool _modoRegistro = false;
+  bool _ocultarClave = true;
   bool _cargando = false;
   String? _error;
 
   @override
   void dispose() {
+    _nombre.dispose();
     _correo.dispose();
     _clave.dispose();
+    _confirmarClave.dispose();
     super.dispose();
   }
 
-  Future<void> _ingresar() async {
+  void _cambiarModo() {
+    setState(() {
+      _modoRegistro = !_modoRegistro;
+      _error = null;
+      _confirmarClave.clear();
+    });
+    _formKey.currentState?.reset();
+  }
+
+  Future<void> _enviarFormulario() async {
     if (_cargando || !(_formKey.currentState?.validate() ?? false)) {
       return;
     }
@@ -34,13 +49,29 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _correo.text.trim(),
-        password: _clave.text,
-      );
-    } on FirebaseAuthException {
+      if (_modoRegistro) {
+        final credencial =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: _correo.text.trim(),
+          password: _clave.text,
+        );
+        final nombre = _nombre.text.trim();
+        if (nombre.isNotEmpty) {
+          await credencial.user?.updateDisplayName(nombre);
+        }
+      } else {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _correo.text.trim(),
+          password: _clave.text,
+        );
+      }
+    } on FirebaseAuthException catch (e) {
       if (mounted) {
-        setState(() => _error = 'No se pudo iniciar sesión. Revisa tus datos.');
+        setState(
+          () => _error = _modoRegistro
+              ? _mensajeErrorRegistro(e.code)
+              : 'No se pudo iniciar sesión. Revisa tus datos.',
+        );
       }
     } catch (_) {
       if (mounted) {
@@ -48,6 +79,23 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } finally {
       if (mounted) setState(() => _cargando = false);
+    }
+  }
+
+  String _mensajeErrorRegistro(String code) {
+    switch (code) {
+      case 'email-already-in-use':
+        return 'Ese correo ya tiene una cuenta. Prueba iniciar sesión.';
+      case 'weak-password':
+        return 'La contraseña es muy débil. Usa al menos 6 caracteres.';
+      case 'invalid-email':
+        return 'El formato del correo no es válido.';
+      case 'operation-not-allowed':
+        return 'El registro con correo no está habilitado en Firebase.';
+      case 'network-request-failed':
+        return 'Error de conexión. Revisa tu internet e inténtalo de nuevo.';
+      default:
+        return 'No se pudo crear la cuenta ($code).';
     }
   }
 
@@ -105,14 +153,14 @@ class _LoginScreenState extends State<LoginScreen> {
     if (code == 'unauthorized-domain') {
       return 'Dominio no autorizado. Agrégalo en Firebase → Authentication → Dominios autorizados.';
     }
-    return 'No se pudo iniciar sesión con Google.';
+    return 'No se pudo iniciar sesión con Google ($code).';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Iniciar sesión'),
+        title: Text(_modoRegistro ? 'Crear cuenta' : 'Iniciar sesión'),
         backgroundColor: Colors.orange,
         foregroundColor: Colors.white,
       ),
@@ -128,11 +176,36 @@ class _LoginScreenState extends State<LoginScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
+          const SizedBox(height: 6),
+          Text(
+            _modoRegistro
+                ? 'Crea tu cuenta con correo y contraseña'
+                : 'Ingresa para publicar o negociar trabajos',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.black54),
+          ),
           const SizedBox(height: 24),
           Form(
             key: _formKey,
             child: Column(
               children: [
+                if (_modoRegistro) ...[
+                  TextFormField(
+                    controller: _nombre,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(
+                      labelText: 'Nombre',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (v) {
+                      if (!_modoRegistro) return null;
+                      return (v == null || v.trim().length < 2)
+                          ? 'Escribe tu nombre (mínimo 2 letras)'
+                          : null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 TextFormField(
                   controller: _correo,
                   keyboardType: TextInputType.emailAddress,
@@ -140,22 +213,63 @@ class _LoginScreenState extends State<LoginScreen> {
                     labelText: 'Correo',
                     border: OutlineInputBorder(),
                   ),
-                  validator: (v) => (v == null || !v.contains('@'))
+                  validator: (v) => (v == null || !v.trim().contains('@'))
                       ? 'Escribe un correo válido'
                       : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _clave,
-                  obscureText: true,
-                  decoration: const InputDecoration(
+                  obscureText: _ocultarClave,
+                  decoration: InputDecoration(
                     labelText: 'Contraseña',
-                    border: OutlineInputBorder(),
+                    helperText:
+                        _modoRegistro ? 'Mínimo 6 caracteres' : null,
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      tooltip: _ocultarClave
+                          ? 'Mostrar contraseña'
+                          : 'Ocultar contraseña',
+                      icon: Icon(
+                        _ocultarClave
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () =>
+                          setState(() => _ocultarClave = !_ocultarClave),
+                    ),
                   ),
-                  validator: (v) => (v == null || v.isEmpty)
-                      ? 'Escribe tu contraseña'
-                      : null,
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return 'Escribe tu contraseña';
+                    }
+                    if (_modoRegistro && v.length < 6) {
+                      return 'La contraseña debe tener al menos 6 caracteres';
+                    }
+                    return null;
+                  },
                 ),
+                if (_modoRegistro) ...[
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _confirmarClave,
+                    obscureText: _ocultarClave,
+                    decoration: const InputDecoration(
+                      labelText: 'Confirmar contraseña',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (v) {
+                      if (!_modoRegistro) return null;
+                      if (v == null || v.isEmpty) {
+                        return 'Confirma tu contraseña';
+                      }
+                      if (v != _clave.text) {
+                        return 'Las contraseñas no coinciden';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
                 const SizedBox(height: 16),
                 if (_error != null) ...[
                   Text(
@@ -170,11 +284,26 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _cargando ? null : _ingresar,
-                    child: Text(_cargando ? 'Ingresando...' : 'Entrar'),
+                    onPressed: _cargando ? null : _enviarFormulario,
+                    child: Text(
+                      _cargando
+                          ? (_modoRegistro
+                              ? 'Creando cuenta...'
+                              : 'Ingresando...')
+                          : (_modoRegistro ? 'Crear cuenta' : 'Entrar'),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: _cargando ? null : _cambiarModo,
+                  child: Text(
+                    _modoRegistro
+                        ? '¿Ya tienes cuenta? Inicia sesión'
+                        : '¿No tienes cuenta? Crear cuenta',
+                  ),
+                ),
+                const SizedBox(height: 8),
                 const Row(
                   children: [
                     Expanded(child: Divider()),
